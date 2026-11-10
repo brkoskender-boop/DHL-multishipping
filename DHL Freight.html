@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>DHL Multishipping</title>
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DHL Shipping">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#d40511">
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+
+<style>
+:root {
+--dhl-red: #d40511;
+--dhl-yellow: #ffcc00;
+--dhl-dark: #222222;
+--dhl-light-gray: #f4f4f6;
+--dhl-border: #e0e0e0;
+--dhl-shadow: 0 4px 12px rgba(0,0,0,0.08);
+--radius: 12px;
+}
+
+* {
+box-sizing: border-box;
+margin: 0;
+padding: 0;
+font-family: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+-webkit-tap-highlight-color: transparent;
+}
+
+body {
+background-color: #f8f9fa;
+color: var(--dhl-dark);
+padding-bottom: 90px;
+max-width: 500px;
+margin: 0 auto;
+min-height: 100vh;
+display: flex;
+flex-direction: column;
+box-shadow: 0 0 20px rgba(0,0,0,0.05);
+}
+
+header {
+background-color: var(--dhl-red);
+color: white;
+padding: 16px 20px;
+position: sticky;
+top: 0;
+z-index: 100;
+display: flex;
+align-items: center;
+justify-content: space-between;
+box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+padding-top: calc(16px + env(safe-area-inset-top));
+}
+
+.header-brand {
+display: flex;
+align-items: center;
+gap: 12px;
+}
+
+.header-title {
+font-weight: 900;
+font-size: 1.25rem;
+letter-spacing: 0.5px;
+font-style: italic;
+text-transform: uppercase;
+}
+
+.lang-switch {
+background: rgba(255, 255, 255, 0.2);
+border: 1px solid rgba(255, 255, 255, 0.4);
+color: white;
+padding: 6px 12px;
+border-radius: 20px;
+font-size: 0.8rem;
+font-weight: 700;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 6px;
+}
+
+.app-body {
+padding: 16px;
+flex: 1;
+}
+
+.tabs {
+display: flex;
+background: #e9ecef;
+border-radius: var(--radius);
+padding: 4px;
+margin-bottom: 20px;
+}
+
+.tab-btn {
+flex: 1;
+padding: 10px;
+border: none;
+background: transparent;
+font-weight: 700;
+font-size: 0.9rem;
+color: #6c757d;
+border-radius: 8px;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.tab-btn.active {
+background: white;
+color: var(--dhl-red);
+box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.card {
+background: white;
+border-radius: var(--radius);
+padding: 18px;
+margin-bottom: 16px;
+box-shadow: var(--dhl-shadow);
+border: 1px solid rgba(0,0,0,0.04);
+}
+
+.card-title {
+font-size: 1rem;
+font-weight: 700;
+margin-bottom: 14px;
+display: flex;
+align-items: center;
+gap: 8px;
+color: var(--dhl-dark);
+border-bottom: 2px solid var(--dhl-yellow);
+padding-bottom: 6px;
+}
+
+.form-group {
+margin-bottom: 14px;
+}
+
+.form-group label {
+display: block;
+font-size: 0.8rem;
+font-weight: 700;
+color: #555;
+margin-bottom: 6px;
+text-transform: uppercase;
+}
+
+.form-control {
+width: 100%;
+padding: 12px;
+border: 1.5px solid var(--dhl-border);
+border-radius: 8px;
+font-size: 1rem;
+outline: none;
+transition: border-color 0.2s;
+background: #fff;
+}
+
+.form-control:focus {
+border-color: var(--dhl-red);
+}
+
+.dims-grid {
+display: grid;
+grid-template-columns: 1fr 1fr 1fr;
+gap: 10px;
+}
+
+.btn {
+width: 100%;
+padding: 14px;
+border: none;
+border-radius: 8px;
+font-size: 1rem;
+font-weight: 700;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: center;
+gap: 8px;
+transition: background 0.2s, transform 0.1s;
+}
+
+.btn:active {
+transform: scale(0.98);
+}
+
+.btn-yellow {
+background-color: var(--dhl-yellow);
+color: var(--dhl-dark);
+}
+
+.btn-outline {
+background: transparent;
+border: 1.5px solid var(--dhl-red);
+color: var(--dhl-red);
+}
+
+.btn-danger {
+background-color: #dc3545;
+color: white;
+}
+
+.dest-section {
+background: #fff;
+border: 1px solid var(--dhl-border);
+border-radius: 10px;
+margin-bottom: 16px;
+overflow: hidden;
+}
+
+.dest-header {
+background: var(--dhl-light-gray);
+padding: 10px 14px;
+font-weight: 800;
+font-size: 0.95rem;
+display: flex;
+justify-content: space-between;
+align-items: center;
+border-bottom: 2px solid var(--dhl-red);
+color: var(--dhl-dark);
+}
+
+.dest-body {
+padding: 10px;
+}
+
+.pallet-item {
+background: #fff;
+border: 1px solid var(--dhl-border);
+border-left: 5px solid var(--dhl-red);
+border-radius: 8px;
+padding: 12px;
+margin-bottom: 8px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+}
+
+.pallet-item:last-child {
+margin-bottom: 0;
+}
+
+.pallet-info {
+display: flex;
+flex-direction: column;
+gap: 4px;
+}
+
+.pallet-type-badge {
+display: inline-block;
+background: #e9ecef;
+color: #333;
+font-weight: 700;
+font-size: 0.75rem;
+padding: 2px 8px;
+border-radius: 12px;
+width: fit-content;
+margin-bottom: 2px;
+}
+
+.pallet-specs {
+font-size: 0.85rem;
+color: #555;
+}
+
+.pallet-actions {
+display: flex;
+gap: 8px;
+}
+
+.icon-btn {
+background: #f0f0f0;
+border: none;
+width: 34px;
+height: 34px;
+border-radius: 6px;
+display: flex;
+align-items: center;
+justify-content: center;
+color: #444;
+cursor: pointer;
+}
+
+.icon-btn.delete {
+color: #dc3545;
+background: #ffebee;
+}
+
+.summary-card {
+background: #fff8e1;
+border: 1px solid #ffe082;
+border-radius: var(--radius);
+padding: 14px;
+margin-bottom: 16px;
+}
+
+.summary-grid {
+display: grid;
+grid-template-columns: repeat(3, 1fr);
+gap: 8px;
+margin-top: 10px;
+text-align: center;
+}
+
+.summary-box {
+background: white;
+padding: 8px;
+border-radius: 6px;
+border: 1px solid #ffecb3;
+}
+
+.summary-box .dest-name {
+font-size: 0.75rem;
+font-weight: 700;
+color: #7f6000;
+}
+
+.summary-box .dest-val {
+font-size: 0.85rem;
+font-weight: 900;
+color: var(--dhl-dark);
+margin-top: 2px;
+}
+
+.modal-overlay {
+position: fixed;
+top: 0; left: 0; right: 0; bottom: 0;
+background: rgba(0,0,0,0.5);
+display: none;
+align-items: center;
+justify-content: center;
+z-index: 1000;
+padding: 20px;
+}
+
+.modal-overlay.active {
+display: flex;
+}
+
+.modal {
+background: white;
+border-radius: var(--radius);
+padding: 20px;
+width: 100%;
+max-width: 400px;
+}
+
+.instruction-box {
+background: #e3f2fd;
+border-left: 4px solid #2196f3;
+padding: 10px;
+border-radius: 4px;
+font-size: 0.85rem;
+margin-bottom: 12px;
+}
+
+.instruction-box ol {
+margin-left: 18px;
+margin-top: 6px;
+}
+
+.history-item {
+border: 1px solid var(--dhl-border);
+border-radius: 8px;
+padding: 12px;
+margin-bottom: 10px;
+background: white;
+}
+
+.history-header {
+display: flex;
+justify-content: space-between;
+font-weight: 700;
+margin-bottom: 6px;
+font-size: 0.9rem;
+border-bottom: 1px solid #f0f0f0;
+padding-bottom: 4px;
+}
+
+.history-details {
+font-size: 0.8rem;
+color: #555;
+}
+</style>
+</head>
+<body>
+
+<header>
+<div class="header-brand">
+<i class="fa-solid fa-truck-fast fa-lg"></i>
+<span class="header-title">DHL Multishipping</span>
+</div>
+<button class="lang-switch" onclick="toggleLanguage()">
+<i class="fa-solid fa-globe"></i>
+<span id="lang-btn-text">SV</span>
+</button>
+</header>
+
+<div class="app-body">
+
+<div class="tabs">
+<button class="tab-btn active" id="tab-booking-btn" onclick="switchTab('booking')">
+<i class="fa-solid fa-plus-circle"></i> <span data-key="tabBooking">Bokning</span>
+</button>
+<button class="tab-btn" id="tab-history-btn" onclick="switchTab('history')">
+<i class="fa-solid fa-clock-history"></i> <span data-key="tabHistory">Historik</span>
+</button>
+</div>
+
+<div id="view-booking">
+
+<div class="summary-card">
+<div style="font-size: 0.85rem; font-weight: 700; color: #7f6000; text-transform: uppercase;">
+<i class="fa-solid fa-chart-pie"></i> <span data-key="summaryTitle">Sammanfattning per destination</span>
+</div>
+<div class="summary-grid" id="summary-grid"></div>
+</div>
+
+<div class="card">
+<div class="card-title">
+<i class="fa-solid fa-boxes-stacked"></i>
+<span id="form-title-text" data-key="addItemTitle">Lägg till kollie</span>
+</div>
+
+<input type="hidden" id="edit-index" value="-1">
+
+<div class="form-group">
+<label data-key="dateLabel">Datum</label>
+<input type="date" id="input-date" class="form-control">
+</div>
+
+<div class="form-group">
+<label data-key="typeLabel">Typ av gods</label>
+<select id="input-type" class="form-control">
+<option value="Pallet">Pall / Pallet</option>
+<option value="Paket">Paket / Parcel</option>
+<option value="Bag">Väska/Säck / Bag</option>
+</select>
+</div>
+
+<div class="form-group">
+<label data-key="destLabel">Destination</label>
+<select id="input-dest" class="form-control">
+<option value="Kiruna">Kiruna</option>
+<option value="Gällivare">Gällivare</option>
+<option value="Visby">Visby</option>
+</select>
+</div>
+
+<div class="form-group">
+<label data-key="weightLabel">Vikt (kg)</label>
+<input type="number" id="input-weight" class="form-control" placeholder="t.ex. 450" min="0.1" step="0.1">
+</div>
+
+<div class="form-group">
+<label data-key="dimsLabel">Mått (L x B x H) cm</label>
+<div class="dims-grid">
+<input type="number" id="input-length" class="form-control" placeholder="L (cm)">
+<input type="number" id="input-width" class="form-control" placeholder="B (cm)">
+<input type="number" id="input-height" class="form-control" placeholder="H (cm)">
+</div>
+</div>
+
+<button class="btn btn-yellow" onclick="savePallet()">
+<i class="fa-solid fa-check"></i>
+<span id="save-btn-text" data-key="saveItemBtn">Spara kollie</span>
+</button>
+<button class="btn btn-outline" id="cancel-edit-btn" onclick="resetForm()" style="display:none; margin-top:8px;">
+<span data-key="cancelBtn">Avbryt</span>
+</button>
+</div>
+
+<div class="card">
+<div class="card-title">
+<i class="fa-solid fa-list-check"></i>
+<span data-key="itemListTitle">Gods per destination</span>
+</div>
+<div id="pallet-list"></div>
+</div>
+
+<div style="margin-top: 15px;">
+<button class="btn btn-outline" onclick="showInstallHelp()" style="border-style: dashed;">
+<i class="fa-solid fa-mobile-screen-button"></i>
+<span data-key="installGuideBtn">Spara som app på telefonen</span>
+</button>
+</div>
+
+</div>
+
+<div id="view-history" style="display: none;">
+<div class="card">
+<div class="card-title">
+<i class="fa-solid fa-box-archive"></i>
+<span data-key="historyTitle">Bokningshistorik</span>
+</div>
+<div id="history-list"></div>
+<button class="btn btn-danger" onclick="clearHistory()" style="margin-top: 10px;">
+<i class="fa-solid fa-trash"></i> <span data-key="clearHistoryBtn">Rensa historik</span>
+</button>
+</div>
+</div>
+
+</div>
+
+<div class="modal-overlay" id="help-modal">
+<div class="modal">
+<div class="card-title" style="border:none;">
+<i class="fa-solid fa-download"></i> <span data-key="installModalTitle">Installera Aplikaciju</span>
+</div>
+
+<div class="instruction-box">
+<strong>iPhone (Safari):</strong>
+<ol>
+<li>Kliknite na ikonicu za dijeljenje (<i class="fa-solid fa-arrow-up-from-bracket"></i>).</li>
+<li>Izaberite <strong>"Add to Home Screen"</strong> (Dodaj na početni zaslon).</li>
+</ol>
+</div>
+
+<div class="instruction-box">
+<strong>Android (Chrome/Edge):</strong>
+<ol>
+<li>Kliknite na 3 tačke (<i class="fa-solid fa-ellipsis-vertical"></i>) u gornjem uglu.</li>
+<li>Izaberite <strong>"Add to Home screen"</strong> ili <strong>"Install App"</strong>.</li>
+</ol>
+</div>
+
+<button class="btn btn-yellow" onclick="closeModal()">OK</button>
+</div>
+</div>
+
+<script>
+const i18n = {
+sv: {
+tabBooking: "Bokning",
+tabHistory: "Historik",
+summaryTitle: "Sammanfattning per destination",
+addItemTitle: "Lägg till kollie",
+editItemTitle: "Redigera kollie",
+dateLabel: "Datum",
+typeLabel: "Typ av gods",
+destLabel: "Destination",
+weightLabel: "Vikt (kg)",
+dimsLabel: "Mått (L x B x H) cm",
+saveItemBtn: "Spara kollie",
+updateItemBtn: "Uppdatera kollie",
+cancelBtn: "Avbryt",
+itemListTitle: "Gods per destination",
+historyTitle: "Sparad historik",
+clearHistoryBtn: "Rensa historik",
+installGuideBtn: "Spara som app på telefonen",
+installModalTitle: "Installera Aplikaciju",
+noItemsInDest: "Inga kolli registrerade.",
+noHistory: "Ingen historik hittades.",
+itemsCount: "st",
+weightUnit: "kg",
+typePallet: "Pall",
+typePaket: "Paket",
+typeBag: "Bag/Väska"
+},
+en: {
+tabBooking: "Booking",
+tabHistory: "History",
+summaryTitle: "Summary per destination",
+addItemTitle: "Add Item",
+editItemTitle: "Edit Item",
+dateLabel: "Date",
+typeLabel: "Item Type",
+destLabel: "Destination",
+weightLabel: "Weight (kg)",
+dimsLabel: "Dimensions (L x W x H) cm",
+saveItemBtn: "Save Item",
+updateItemBtn: "Update Item",
+cancelBtn: "Cancel",
+itemListTitle: "Cargo per destination",
+historyTitle: "Saved History",
+clearHistoryBtn: "Clear History",
+installGuideBtn: "Save as App on Phone",
+installModalTitle: "Install Application",
+noItemsInDest: "No items registered.",
+noHistory: "No history found.",
+itemsCount: "pcs",
+weightUnit: "kg",
+typePallet: "Pallet",
+typePaket: "Parcel",
+typeBag: "Bag"
+}
+};
+
+const destinations = ['Kiruna', 'Gällivare', 'Visby'];
+let currentLang = 'sv';
+let currentPallets = JSON.parse(localStorage.getItem('dhl_current_pallets')) || [];
+let historyPallets = JSON.parse(localStorage.getItem('dhl_history_pallets')) || [];
+
+document.getElementById('input-date').valueAsDate = new Date();
+
+function toggleLanguage() {
+currentLang = currentLang === 'sv' ? 'en' : 'sv';
+document.getElementById('lang-btn-text').innerText = currentLang.toUpperCase();
+updateUI();
+}
+
+function switchTab(tab) {
+document.getElementById('view-booking').style.display = tab === 'booking' ? 'block' : 'none';
+document.getElementById('view-history').style.display = tab === 'history' ? 'block' : 'none';
+document.getElementById('tab-booking-btn').classList.toggle('active', tab === 'booking');
+document.getElementById('tab-history-btn').classList.toggle('active', tab === 'history');
+}
+
+function getTypeTranslation(type) {
+if (type === 'Paket') return i18n[currentLang].typePaket;
+if (type === 'Bag') return i18n[currentLang].typeBag;
+return i18n[currentLang].typePallet;
+}
+
+function savePallet() {
+const date = document.getElementById('input-date').value;
+const type = document.getElementById('input-type').value;
+const dest = document.getElementById('input-dest').value;
+const weight = parseFloat(document.getElementById('input-weight').value);
+const l = document.getElementById('input-length').value;
+const w = document.getElementById('input-width').value;
+const h = document.getElementById('input-height').value;
+const editIdx = parseInt(document.getElementById('edit-index').value);
+
+if (!date || isNaN(weight) || !l || !w || !h) {
+alert(currentLang === 'sv' ? "Vänligen fyll i alla fält korrekt." : "Please fill in all fields correctly.");
+return;
+}
+
+const palletData = {
+id: Date.now(),
+date: date,
+type: type,
+dest: dest,
+weight: weight,
+l: l,
+w: w,
+h: h
+};
+
+if (editIdx >= 0) {
+currentPallets[editIdx] = palletData;
+} else {
+currentPallets.push(palletData);
+historyPallets.push(palletData);
+}
+
+saveData();
+resetForm();
+updateUI();
+}
+
+function editPallet(id) {
+const index = currentPallets.findIndex(p => p.id === id);
+if (index === -1) return;
+const item = currentPallets[index];
+document.getElementById('input-date').value = item.date;
+document.getElementById('input-type').value = item.type || 'Pallet';
+document.getElementById('input-dest').value = item.dest;
+document.getElementById('input-weight').value = item.weight;
+document.getElementById('input-length').value = item.l;
+document.getElementById('input-width').value = item.w;
+document.getElementById('input-height').value = item.h;
+document.getElementById('edit-index').value = index;
+
+document.getElementById('cancel-edit-btn').style.display = 'block';
+window.scrollTo({ top: 150, behavior: 'smooth' });
+updateUI();
+}
+
+function deletePallet(id) {
+currentPallets = currentPallets.filter(p => p.id !== id);
+saveData();
+updateUI();
+}
+
+function resetForm() {
+document.getElementById('edit-index').value = "-1";
+document.getElementById('input-weight').value = '';
+document.getElementById('input-length').value = '';
+document.getElementById('input-width').value = '';
+document.getElementById('input-height').value = '';
+document.getElementById('cancel-edit-btn').style.display = 'none';
+updateUI();
+}
+
+function saveData() {
+localStorage.setItem('dhl_current_pallets', JSON.stringify(currentPallets));
+localStorage.setItem('dhl_history_pallets', JSON.stringify(historyPallets));
+}
+
+function clearHistory() {
+if (confirm(currentLang === 'sv' ? "Är du säker på att du vill rensa historiken?" : "Are you sure you want to clear history?")) {
+historyPallets = [];
+saveData();
+updateUI();
+}
+}
+
+function updateUI() {
+document.querySelectorAll('[data-key]').forEach(el => {
+const key = el.getAttribute('data-key');
+if (i18n[currentLang][key]) {
+el.innerText = i18n[currentLang][key];
+}
+});
+
+const isEditing = parseInt(document.getElementById('edit-index').value) >= 0;
+document.getElementById('save-btn-text').innerText = isEditing
+? i18n[currentLang].updateItemBtn
+: i18n[currentLang].saveItemBtn;
+
+document.getElementById('form-title-text').innerText = isEditing
+? i18n[currentLang].editItemTitle
+: i18n[currentLang].addItemTitle;
+
+const listEl = document.getElementById('pallet-list');
+listEl.innerHTML = '';
+
+destinations.forEach(dest => {
+const itemsInDest = currentPallets.filter(p => p.dest === dest);
+const totalKg = itemsInDest.reduce((acc, item) => acc + item.weight, 0);
+
+let itemsHtml = '';
+if (itemsInDest.length === 0) {
+itemsHtml = <div style="font-size:0.85rem; color:#888; text-align:center; padding:8px;"&gt;${i18n[currentLang].noItemsInDest}</div>; } else { itemsInDest.forEach(item =&gt; { const typeLabel = getTypeTranslation(item.type || 'Pallet'); itemsHtml +=
+<div class="pallet-item">
+<div class="pallet-info">
+<span class="pallet-type-badge">${typeLabel}&lt;/span&gt; &lt;span class="pallet-specs"&gt;&lt;strong&gt;${item.weight} kg</strong> | ${item.l}x${item.w}x${item.h} cm (${item.date})</span>
+</div>
+<div class="pallet-actions">
+<button class="icon-btn" onclick="editPallet(${item.id})"&gt;&lt;i class="fa-solid fa-pen"&gt;&lt;/i&gt;&lt;/button&gt; &lt;button class="icon-btn delete" onclick="deletePallet(${item.id})"><i class="fa-solid fa-trash"></i></button>
+</div>
+</div>
+`;
+});
+}
+
+listEl.innerHTML += &lt;div class="dest-section"&gt; &lt;div class="dest-header"&gt; &lt;span&gt;&lt;i class="fa-solid fa-location-dot" style="color:var(--dhl-red);"&gt;&lt;/i&gt;${dest}</span>
+<span style="font-size:0.8rem; font-weight:700; color:#555;">{i18n[currentLang].itemsCount} | {i18n[currentLang].weightUnit}</span>
+</div>
+<div class="dest-body">
+${itemsHtml} &lt;/div&gt; &lt;/div&gt;;
+});
+
+const summaryGrid = document.getElementById('summary-grid');
+summaryGrid.innerHTML = '';
+
+destinations.forEach(d => {
+const filtered = currentPallets.filter(p => p.dest === d);
+const count = filtered.length;
+const totalKg = filtered.reduce((acc, curr) => acc + curr.weight, 0);
+
+summaryGrid.innerHTML += &lt;div class="summary-box"&gt; &lt;div class="dest-name"&gt;${d}</div>
+<div class="dest-val">{i18n[currentLang].itemsCount}</div>
+<div class="dest-val" style="color:var(--dhl-red); font-size:0.75rem;">{i18n[currentLang].weightUnit}</div>
+</div>
+`;
+});
+
+const historyEl = document.getElementById('history-list');
+historyEl.innerHTML = '';
+if (historyPallets.length === 0) {
+historyEl.innerHTML = <div style="text-align:center; color:#888; padding:10px;"&gt;${i18n[currentLang].noHistory}</div>; } else { [...historyPallets].reverse().forEach(item =&gt; { const typeLabel = getTypeTranslation(item.type || 'Pallet'); historyEl.innerHTML +=
+<div class="history-item">
+<div class="history-header">
+<span>[${typeLabel}] ${item.dest}</span>
+<span>${item.date}&lt;/span&gt; &lt;/div&gt; &lt;div class="history-details"&gt; ${item.weight} kg | ${item.l} x ${item.w} x ${item.h} cm &lt;/div&gt; &lt;/div&gt;;
+});
+}
+}
+
+function showInstallHelp() {
+document.getElementById('help-modal').classList.add('active');
+}
+
+function closeModal() {
+document.getElementById('help-modal').classList.remove('active');
+}
+
+updateUI();
+</script>
+</body>
+</html>
